@@ -16,7 +16,7 @@ const options = {
     },
     security: [{ bearerAuth: [] }]
   },
-  apis: ["./src/routes/*.ts"] // we’ll add JSDoc comments in routes
+  apis: ["./src/routes/*.ts"]
 };
 
 export const swaggerSpec = swaggerJSDoc(options);
