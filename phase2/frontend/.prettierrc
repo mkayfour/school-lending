@@ -1,0 +1,11 @@
+{
+  "semi": true,
+  "singleQuote": false,
+  "trailingComma": "es5",
+  "printWidth": 120,
+  "tabWidth": 2,
+  "extends": ["prettier-config-airbnb"],
+  "importOrder": ["^react$", "^@?\\w", "^(@src|src)/(.*)$", "^[./]"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}
