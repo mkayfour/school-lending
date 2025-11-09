@@ -14,6 +14,7 @@ import {
   Stack,
   Box,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { Clear, Search } from "@mui/icons-material";
@@ -37,7 +38,7 @@ function RequestButton({ equipmentId, availableQuantity }: { equipmentId: number
 
   return (
     <Button disabled={loading || availableQuantity <= 0} onClick={request} variant="contained">
-      Request
+      Request item
     </Button>
   );
 }
@@ -48,12 +49,15 @@ export default function EquipmentList() {
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("");
   const [available, setAvailable] = useState("all");
+  const [loading, setLoading] = useState(false);
 
   const load = async () => {
+    setLoading(true);
     const { data } = await api.get("/equipment", {
       params: { q, category, available: available === "yes" ? 1 : "" },
     });
     setItems(data);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -125,7 +129,11 @@ export default function EquipmentList() {
                   setQ("");
                   setCategory("");
                   setAvailable("all");
-                  load();
+
+                  setLoading(true);
+                  load().then(() => {
+                    setLoading(false);
+                  });
                 }}
               >
                 Clear
@@ -140,6 +148,8 @@ export default function EquipmentList() {
         <Divider sx={{ width: "100%", mb: 2 }} />
 
         <Grid container spacing={2}>
+          {loading && <CircularProgress />}
+          {!loading && items.length === 0 && <Typography variant="body1">No items found</Typography>}
           {items.map((it) => (
             <Grid sx={{ xs: 12, md: 6, lg: 4 }} key={it.id}>
               <Card variant="outlined" sx={{ borderRadius: 2, boxShadow: 2, border: "1px solid #e0e0e0" }}>

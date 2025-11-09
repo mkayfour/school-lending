@@ -1,14 +1,29 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { type BorrowRequest } from "../types/types";
-import { Container, Typography, Table, TableHead, TableRow, TableCell, TableBody, Paper } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  CircularProgress,
+} from "@mui/material";
 
 export default function Requests() {
   const [rows, setRows] = useState<BorrowRequest[]>([]);
+  const [loading, setLoading] = useState(false);
+
   const load = async () => {
+    setLoading(true);
     const { data } = await api.get("/borrow/my");
     setRows(data);
+    setLoading(false);
   };
+
   useEffect(() => {
     load();
   }, []);
@@ -30,6 +45,14 @@ export default function Requests() {
             </TableRow>
           </TableHead>
           <TableBody>
+            {loading && <CircularProgress />}
+            {!loading && rows.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={5}>
+                  <Typography variant="body1">No requests found</Typography>
+                </TableCell>
+              </TableRow>
+            )}
             {rows.map((r) => (
               <TableRow key={r.id}>
                 <TableCell>{r.id}</TableCell>
