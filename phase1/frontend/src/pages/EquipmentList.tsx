@@ -37,7 +37,7 @@ function RequestButton({ equipmentId, availableQuantity }: { equipmentId: number
   };
 
   return (
-    <Button disabled={loading || availableQuantity <= 0} onClick={request} variant="contained">
+    <Button disabled={loading} onClick={request} variant="contained">
       Request item
     </Button>
   );

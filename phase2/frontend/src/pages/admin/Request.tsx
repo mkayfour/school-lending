@@ -153,7 +153,7 @@ export default function AdminRequests() {
                       <TableCell>
                         <Stack direction="row" spacing={0.7} alignItems="center">
                           <Chip
-                            label={r.user?.name ?? "—"}
+                            label={r.User?.name ?? "—"}
                             size="small"
                             sx={{
                               px: 1.2,
@@ -165,7 +165,7 @@ export default function AdminRequests() {
                             }}
                           />
                           <Chip
-                            label={r.user?.role ?? "—"}
+                            label={r.User?.role ?? "—"}
                             size="small"
                             sx={{
                               fontWeight: 500,
@@ -188,7 +188,7 @@ export default function AdminRequests() {
                         </Stack>
                       </TableCell>
                       <TableCell sx={{ fontWeight: 500, color: "#6741a9" }}>
-                        {r.equipment?.name ?? "—"}
+                        {r.Equipment?.name ?? "—"}
                       </TableCell>
                       <TableCell sx={{ whiteSpace: "nowrap", color: "#7749a5" }}>
                         <b>{prettyDate(r.borrowDate)}</b>
