@@ -8,11 +8,14 @@ import {
   CardContent,
   Divider,
   CardHeader,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import { type FormEvent, useState } from "react";
 import { api } from "../api";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Role } from "../types/types";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -20,6 +23,7 @@ export default function Signup() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState<Role>("STUDENT" as Role);
 
   const handleSignup = async (e: FormEvent) => {
     if (password !== confirmPassword) {
@@ -90,7 +94,12 @@ export default function Signup() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
-                  <Button type="submit" variant="contained" fullWidth>
+                  <Select label="Role" fullWidth sx={{ mb: 2 }} value={role} onChange={(e) => setRole(e.target.value)}>
+                    <MenuItem value="STUDENT">Student</MenuItem>
+                    <MenuItem value="STAFF">Staff</MenuItem>
+                    <MenuItem value="ADMIN">Admin</MenuItem>
+                  </Select>
+                  <Button onClick={handleSignup} variant="contained" fullWidth>
                     Signup
                   </Button>
                 </form>

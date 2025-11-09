@@ -17,8 +17,9 @@ import {
 } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { Clear, Search } from "@mui/icons-material";
+import toast from "react-hot-toast";
 
-function RequestButton({ equipmentId }: { equipmentId: number }) {
+function RequestButton({ equipmentId, availableQuantity }: { equipmentId: number; availableQuantity: number }) {
   const [loading, setLoading] = useState(false);
 
   const request = async () => {
@@ -31,11 +32,11 @@ function RequestButton({ equipmentId }: { equipmentId: number }) {
       returnDate: tomorrow.toISOString(),
     });
     setLoading(false);
-    alert("Requested!");
+    toast.success("Requested!");
   };
 
   return (
-    <Button disabled={loading} onClick={request} variant="contained">
+    <Button disabled={loading || availableQuantity <= 0} onClick={request} variant="contained">
       Request
     </Button>
   );
@@ -50,7 +51,7 @@ export default function EquipmentList() {
 
   const load = async () => {
     const { data } = await api.get("/equipment", {
-      params: { q, category, available: available === "Yes" ? 1 : "" },
+      params: { q, category, available: available === "yes" ? 1 : "" },
     });
     setItems(data);
   };
@@ -152,7 +153,7 @@ export default function EquipmentList() {
                 </CardContent>
                 <CardActions>
                   {auth ? (
-                    <RequestButton equipmentId={it.id} />
+                    <RequestButton equipmentId={it.id} availableQuantity={it.availableQuantity} />
                   ) : (
                     <Typography sx={{ pl: 2 }} variant="caption">
                       Login to request

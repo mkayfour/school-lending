@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box, Avatar, Tooltip } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Login, Logout, PersonAdd } from "@mui/icons-material";
@@ -19,9 +19,11 @@ export default function NavBar() {
           School Equipment Lending Portal
         </Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
-          {auth && auth.role === "STUDENT" &&<Button color="inherit" component={Link} to="/">
-            Equipment
-          </Button>}
+          {auth && auth.role === "STUDENT" && (
+            <Button color="inherit" component={Link} to="/">
+              Equipment
+            </Button>
+          )}
           {auth && auth.role === "STUDENT" && (
             <Button color="inherit" component={Link} to="/requests">
               My Requests
@@ -54,6 +56,13 @@ export default function NavBar() {
             </Button>
           )}
         </Box>
+        {auth ? (
+          <Tooltip title={`Logged in as ${auth?.name || "Guest"}`}>
+            <Avatar sx={{ width: 32, height: 32, ml: 2 }}>{auth?.name?.charAt(0).toUpperCase()}</Avatar>
+          </Tooltip>
+        ) : (
+          <></>
+        )}
       </Toolbar>
     </AppBar>
   );

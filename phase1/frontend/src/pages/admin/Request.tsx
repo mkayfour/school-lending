@@ -1,8 +1,20 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api";
 import { type BorrowRequest } from "../../types/types";
-import { Container, Typography, Paper, Table, TableHead, TableRow, TableCell, TableBody, Button, Stack } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Button,
+  Stack,
+} from "@mui/material";
 import { Check, Close } from "@mui/icons-material";
+import toast from "react-hot-toast";
 
 export default function AdminRequests() {
   const [rows, setRows] = useState<BorrowRequest[]>([]);
@@ -15,7 +27,12 @@ export default function AdminRequests() {
   }, []);
 
   const act = async (id: number, action: "approve" | "reject" | "return") => {
-    await api.put(`/borrow/${id}/${action}`);
+    try {
+      await api.put(`/borrow/${id}/${action}`);
+      toast.success("Request updated successfully");
+    } catch (error: any) {
+      toast.error(error.response.data.error);
+    }
     load();
   };
 
@@ -50,16 +67,34 @@ export default function AdminRequests() {
                 <TableCell>{new Date(r.returnDate).toLocaleString()}</TableCell>
                 <TableCell>
                   <Stack direction="row" spacing={1}>
-                     <Button disabled={r.status !== "REQUESTED"} variant="outlined" endIcon={<Check />} color="success" onClick={() => act(r.id, "approve")}>
-                    Approve
-                  </Button>
-                  <Button disabled={r.status !== "REQUESTED"} variant="outlined" endIcon={<Close />} color="error" onClick={() => act(r.id, "reject")}>
-                    Reject
-                  </Button>
-                  <Button disabled={r.status !== "APPROVED"} variant="outlined" endIcon={<Check />} color="success" onClick={() => act(r.id, "return")}>
-                    Mark Returned
-                  </Button>
-                 </Stack>
+                    <Button
+                      disabled={r.status !== "REQUESTED"}
+                      variant="outlined"
+                      endIcon={<Check />}
+                      color="success"
+                      onClick={() => act(r.id, "approve")}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      disabled={r.status !== "REQUESTED"}
+                      variant="outlined"
+                      endIcon={<Close />}
+                      color="error"
+                      onClick={() => act(r.id, "reject")}
+                    >
+                      Reject
+                    </Button>
+                    <Button
+                      disabled={r.status !== "APPROVED"}
+                      variant="outlined"
+                      endIcon={<Check />}
+                      color="success"
+                      onClick={() => act(r.id, "return")}
+                    >
+                      Mark Returned
+                    </Button>
+                  </Stack>
                 </TableCell>
               </TableRow>
             ))}

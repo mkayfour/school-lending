@@ -1,14 +1,4 @@
-import {
-  Button,
-  Container,
-  TextField,
-  Stack,
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-} from "@mui/material";
+import { Button, Container, TextField, Stack, Box, Card, CardContent, CardHeader, Divider } from "@mui/material";
 import { type FormEvent, useState } from "react";
 import { api } from "../api";
 import { useAuth } from "../contexts/AuthContext";
@@ -29,7 +19,9 @@ export default function Login() {
       toast.error(error.response.data.error);
       return null;
     });
+
     if (!response) return;
+
     const { data } = response;
 
     toast.success(`Logged in as ${data.name}`);
@@ -82,7 +74,7 @@ export default function Login() {
                 </form>
               </Box>
               <Button variant="outlined" fullWidth onClick={handleSignup}>
-                Signup
+                Need an account? Signup
               </Button>
             </Stack>
           </CardContent>

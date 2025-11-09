@@ -12,7 +12,6 @@ import NavBar from "./components/Navbar.tsx";
 import { useAuth } from "./contexts/AuthContext.tsx";
 
 export default function App() {
-
   const { auth } = useAuth();
 
   const renderRoutes = () => {
@@ -23,7 +22,7 @@ export default function App() {
     } else {
       return <EquipmentList />;
     }
-  }
+  };
 
   return (
     <>
