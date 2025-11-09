@@ -198,6 +198,9 @@ router.put('/:id/approve', auth(['STAFF','ADMIN']), async (req, res) => {
   }
 
   br.status = 'APPROVED';
+  eq.availableQuantity = Number(eq.availableQuantity) - 1;
+  await eq.save();
+
   await br.save();
   res.json(br);
 });
@@ -206,7 +209,16 @@ router.put('/:id/reject', auth(['STAFF','ADMIN']), async (req, res) => {
   const id = Number(req.params.id);
   const br = await BorrowRequest.findByPk(id);
   if (!br) return res.status(404).json({ error: 'Not found' });
+
+  const eq = await Equipment.findByPk(br.equipmentId);
+  if (!eq) return res.status(400).json({ error: 'Equipment missing' });
+
+  eq.availableQuantity = Number(eq.availableQuantity) + 1;
+  await eq.save();
+
   br.status = 'REJECTED';
+  br.availableQuantity = eq.availableQuantity + 1;
+
   await br.save();
   res.json(br);
 });
@@ -215,7 +227,14 @@ router.put('/:id/return', auth(['STAFF','ADMIN']), async (req, res) => {
   const id = Number(req.params.id);
   const br = await BorrowRequest.findByPk(id);
   if (!br) return res.status(404).json({ error: 'Not found' });
+
+  const eq = await Equipment.findByPk(br.equipmentId);
+  if (!eq) return res.status(400).json({ error: 'Equipment missing' });
+
   br.status = 'RETURNED';
+  eq.availableQuantity = Number(eq.availableQuantity) + 1;
+
+  await eq.save();
   await br.save();
   res.json(br);
 });
