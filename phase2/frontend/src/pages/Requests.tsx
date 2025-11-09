@@ -13,7 +13,6 @@ import {
   Paper,
   CircularProgress,
   Box,
-  Chip,
   Tooltip,
   Card,
   CardHeader,
@@ -23,46 +22,11 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import { CheckCircle, HourglassBottom, Cancel, ListAlt } from "@mui/icons-material";
+import { ListAlt } from "@mui/icons-material";
+import { StatusChip, toCanonicalStatus } from "../utils/status";
 
 function statusChip(status: string) {
-  // Add more statuses and icons if needed
-  let color: "success" | "error" | "warning" | "default" = "default";
-  let icon = null;
-  let label = status;
-
-  switch (status) {
-    case "APPROVED":
-      color = "success";
-      icon = <CheckCircle sx={{ fontSize: 18 }} />;
-      label = "Approved";
-      break;
-    case "PENDING":
-      color = "warning";
-      icon = <HourglassBottom sx={{ fontSize: 18 }} />;
-      label = "Pending";
-      break;
-    case "REJECTED":
-    case "DENIED":
-      color = "error";
-      icon = <Cancel sx={{ fontSize: 18 }} />;
-      label = "Rejected";
-      break;
-    default:
-      color = "default";
-      icon = <HourglassBottom sx={{ fontSize: 18 }} />;
-      label = status;
-  }
-  return (
-    <Chip
-      icon={icon}
-      label={label}
-      color={color}
-      sx={{ fontWeight: 600, fontSize: "0.97em", px: 0.8, minWidth: 92, letterSpacing: 0.13 }}
-      variant={color === "default" ? "outlined" : "filled"}
-      size="small"
-    />
-  );
+  return <StatusChip status={status} />;
 }
 
 function formatDate(dateStr?: string | null) {
@@ -90,7 +54,11 @@ export default function Requests() {
     setLoading(true);
     try {
       const { data } = await api.get("/borrow/my");
-      setRows(data);
+      const normalized: BorrowRequest[] = (data || []).map((r: any) => ({
+        ...r,
+        status: toCanonicalStatus(r.status),
+      }));
+      setRows(normalized);
     } catch (e) {
       setRows([]);
     }

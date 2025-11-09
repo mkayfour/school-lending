@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import { Check, Close, AssignmentInd } from "@mui/icons-material";
 import toast from "react-hot-toast";
+import { toCanonicalStatus } from "../../utils/status";
 
 // Helper: pretty date formatting
 function prettyDate(date?: string | null) {
@@ -52,7 +53,11 @@ export default function AdminRequests() {
     setLoading(true);
     try {
       const { data } = await api.get("/borrow/all");
-      setRows(data);
+      const normalized = (data || []).map((r: any) => ({
+        ...r,
+        status: toCanonicalStatus(r.status),
+      }));
+      setRows(normalized);
     } catch (e) {
       toast.error("Failed to load requests");
     }
@@ -148,7 +153,7 @@ export default function AdminRequests() {
                       <TableCell>
                         <Stack direction="row" spacing={0.7} alignItems="center">
                           <Chip
-                            label={r.User?.name ?? "—"}
+                            label={r.user?.name ?? "—"}
                             size="small"
                             sx={{
                               px: 1.2,
@@ -160,7 +165,7 @@ export default function AdminRequests() {
                             }}
                           />
                           <Chip
-                            label={r.User?.role ?? "—"}
+                            label={r.user?.role ?? "—"}
                             size="small"
                             sx={{
                               fontWeight: 500,
@@ -183,7 +188,7 @@ export default function AdminRequests() {
                         </Stack>
                       </TableCell>
                       <TableCell sx={{ fontWeight: 500, color: "#6741a9" }}>
-                        {r.Equipment?.name ?? "—"}
+                        {r.equipment?.name ?? "—"}
                       </TableCell>
                       <TableCell sx={{ whiteSpace: "nowrap", color: "#7749a5" }}>
                         <b>{prettyDate(r.borrowDate)}</b>

@@ -63,7 +63,7 @@ export default function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "linear-gradient(135deg, #ede7f6, #e3f2fd 90%)",
+        background: "linear-gradient(135deg, #ede7f6, #e3f2fd 90%)",
       }}
     >
       <Container maxWidth="xs">

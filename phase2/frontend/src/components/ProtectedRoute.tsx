@@ -9,7 +9,6 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children, roles }: ProtectedRouteProps) {
   const { auth } = useAuth();
-  console.log("auth", auth);
 
   if (!auth) return <Navigate to="/login" replace />;
   if (roles && !roles.includes(auth.role)) return <Navigate to="/" replace />;
