@@ -217,7 +217,6 @@ router.put('/:id/reject', auth(['STAFF','ADMIN']), async (req, res) => {
   await eq.save();
 
   br.status = 'REJECTED';
-  br.availableQuantity = eq.availableQuantity + 1;
 
   await br.save();
   res.json(br);

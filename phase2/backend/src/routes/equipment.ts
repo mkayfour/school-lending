@@ -154,7 +154,7 @@ router.put('/:id', auth(['ADMIN']), async (req, res) => {
   const { id } = req.params;
   const { name, category, condition, quantity } = req.body;
   const [count, rows] = await Equipment.update(
-    { name, category, condition, quantity, availableQuantity: quantity },
+    { name, category, condition, quantity },
     { where: { id }, returning: true }
   );
   if (!count) return res.status(404).json({ error: 'Not found' });
