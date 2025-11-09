@@ -5,20 +5,71 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
+// Robust email validator (same as Signup)
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    submit: "",
+  });
+
+  const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
 
   const navigation = useNavigate();
 
+  const validate = () => {
+    let valid = true;
+    const newErrors = { email: "", password: "", submit: "" };
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required.";
+      valid = false;
+    } else if (!isValidEmail(email.trim())) {
+      newErrors.email = "Enter a valid email address.";
+      valid = false;
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required.";
+      valid = false;
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters.";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    const response = await api.post("/auth/login", { email, password }).catch((error) => {
-      toast.error(error.response.data.error);
-      return null;
-    });
+
+    setErrors((errs) => ({ ...errs, submit: "" }));
+
+    if (!validate()) return;
+
+    setLoading(true);
+    const response = await api
+      .post("/auth/login", { email, password })
+      .catch((error) => {
+        setErrors((errs) => ({
+          ...errs,
+          submit:
+            error?.response?.data?.error ||
+            "Unable to login. Please check your credentials.",
+        }));
+        setLoading(false);
+        return null;
+      });
 
     if (!response) return;
 
@@ -28,10 +79,11 @@ export default function Login() {
 
     login(data.token, data.role, data.name);
 
+    setLoading(false);
     navigation("/");
   };
 
-  const handleSignup = async () => {
+  const handleSignup = () => {
     navigation("/signup");
   };
 
@@ -52,13 +104,19 @@ export default function Login() {
           <CardContent>
             <Stack direction="column" spacing={2}>
               <Box>
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleLogin} noValidate>
                   <TextField
                     label="Email"
                     fullWidth
                     sx={{ mb: 2 }}
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errors.email) setErrors((errs) => ({ ...errs, email: "" }));
+                    }}
+                    error={!!errors.email}
+                    helperText={errors.email}
+                    autoComplete="email"
                   />
                   <TextField
                     label="Password"
@@ -66,14 +124,28 @@ export default function Login() {
                     fullWidth
                     sx={{ mb: 2 }}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (errors.password) setErrors((errs) => ({ ...errs, password: "" }));
+                    }}
+                    error={!!errors.password}
+                    helperText={errors.password}
+                    autoComplete="current-password"
                   />
-                  <Button type="submit" variant="contained" fullWidth>
-                    Login
+                  {errors.submit && (
+                    <Box sx={{ color: "#d32f2f", mb: 1, fontSize: 15 }}>{errors.submit}</Box>
+                  )}
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    disabled={loading}
+                  >
+                    {loading ? "Logging in..." : "Login"}
                   </Button>
                 </form>
               </Box>
-              <Button variant="outlined" fullWidth onClick={handleSignup}>
+              <Button variant="outlined" fullWidth onClick={handleSignup} disabled={loading}>
                 Need an account? Signup
               </Button>
             </Stack>
